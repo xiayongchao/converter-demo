@@ -1,4 +1,4 @@
-package org.jc.framework.converter.support;
+package org.jc.framework.converter.core;
 
 import java.util.Collection;
 

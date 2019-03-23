@@ -1,11 +1,9 @@
 import entity.User;
 import entity.UserInfo;
+import org.jc.framework.converter.core.Converter;
 import org.jc.framework.converter.core.Converters;
-import org.jc.framework.converter.support.Converter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -55,9 +53,14 @@ public class Main {
         List<UserInfo> userInfoList = new ArrayList<>();
         user.setAskIdList(Arrays.asList(1, 2, 3));
         user.setCommentIdList(Arrays.asList(4, 5, 6));
+        user.setLogMap(new HashMap<String, String>() {
+            {
+                put("a", "fdas");
+                put("b", "43fre");
+            }
+        });
         userInfoList.add(user);
-//        List<User> userList = Converters.convert(userInfoList, User.class);
-        List<User> userList = Converters.convert(userInfoList, List.class, User.class);
+        List<User> userList = (List<User>) Converters.setDeepCopy(true).convert(userInfoList, List.class, User.class);
         for (User user1 : userList) {
             System.out.println(user1.getId());
             System.out.println(user1.getName());
@@ -71,7 +74,11 @@ public class Main {
                     System.out.println(">> " + l);
                 }
             }
-
+            if (user1.getLogMap() != null) {
+                for (Map.Entry<String, String> entry : user1.getLogMap().entrySet()) {
+                    System.out.println(entry.getKey() + "==" + entry.getValue());
+                }
+            }
         }
     }
 

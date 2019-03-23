@@ -1,6 +1,7 @@
 package entity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiayc
@@ -11,6 +12,7 @@ public class User {
     private String name;
     private List<Integer> askIdList;
     private List<Long> commentIdList;
+    private Map<String, String> logMap;
 
     public long getId() {
         return id;
@@ -42,5 +44,13 @@ public class User {
 
     public void setCommentIdList(List<Long> commentIdList) {
         this.commentIdList = commentIdList;
+    }
+
+    public Map<String, String> getLogMap() {
+        return logMap;
+    }
+
+    public void setLogMap(Map<String, String> logMap) {
+        this.logMap = logMap;
     }
 }

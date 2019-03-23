@@ -1,21 +1,22 @@
 package org.jc.framework.converter.core;
 
 import org.jc.framework.converter.exception.ConvertException;
-import org.jc.framework.converter.support.CollectionAdapter;
-import org.jc.framework.converter.support.Converter;
-import org.jc.framework.converter.support.FieldMatcher;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author xiayc
  * @date 2019/3/18
  */
 public class ConverterContext {
+    /**
+     * 深拷贝
+     */
     private boolean deepCopy = false;
     private final ConverterRegistry converterRegistry = new ConverterRegistry();
     private final FieldMatcherRegistry fieldMatcherRegistry = new FieldMatcherRegistry();
@@ -60,10 +61,16 @@ public class ConverterContext {
         if (sourceType instanceof ParameterizedType) {
             //如果需要转换的类型是泛型类型
             if (isCollection(sourceType) && isCollection(targetType)) {
-                //Collection 转换
-                return convert((Collection<S>) source, (Class<? extends Collection>) ((ParameterizedTypeImpl) targetType).getRawType(), (Class<T>) ((ParameterizedTypeImpl) targetType).getActualTypeArguments()[0]);
+                //Collection转换
+                return convert((Collection<S>) source, (Class<? extends Collection>) ((ParameterizedTypeImpl) targetType).getRawType(),
+                        (Class<T>) ((ParameterizedTypeImpl) targetType).getActualTypeArguments()[0]);
             }
-
+            if (isMap(sourceType) && isMap(targetType)) {
+                //Map转换
+                return convert((Map<?, ?>) source, (Class<? extends Map>) ((ParameterizedTypeImpl) targetType).getRawType(),
+                        (Class<?>) ((ParameterizedTypeImpl) targetType).getActualTypeArguments()[0],
+                        (Class<?>) ((ParameterizedTypeImpl) targetType).getActualTypeArguments()[1]);
+            }
             return null;
         } else {
             return convert(source, (Class<S>) sourceType, (Class<T>) targetType);
@@ -87,6 +94,30 @@ public class ConverterContext {
         if (genericInterfaces.length > 0) {
             for (Type genericInterface : genericInterfaces) {
                 if (isCollection(genericInterface)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean isMap(Type type) {
+        if (type == null) {
+            return false;
+        }
+        Class<?> typeClass;
+        if (type instanceof ParameterizedType) {
+            typeClass = ((ParameterizedTypeImpl) type).getRawType();
+        } else {
+            typeClass = (Class<?>) type;
+        }
+        if (typeClass.equals(Map.class)) {
+            return true;
+        }
+        Type[] genericInterfaces = typeClass.getGenericInterfaces();
+        if (genericInterfaces.length > 0) {
+            for (Type genericInterface : genericInterfaces) {
+                if (isMap(genericInterface)) {
                     return true;
                 }
             }
@@ -137,20 +168,20 @@ public class ConverterContext {
         return (T) convert(source, (Type) sourceClass, (Type) targetClass);
     }
 
-    public <S, TC extends Collection, T> TC convert(Collection<S> sourceCollection, Class<TC> targetCollectionClass, Class<T> targetClass) {
+    public <S, TC extends Collection, T> Collection<T> convert(Collection<S> sourceCollection, Class<TC> targetCollectionClass, Class<T> targetClass) {
         if (targetCollectionClass == null || targetClass == null) {
             throw new ConvertException("targetCollectionClass或targetClass的值请不要为空");
         }
         if (sourceCollection == null) {
             return null;
         }
-        CollectionAdapter<TC> adapter = adapterRegistry.getAdapter(targetCollectionClass);
+        CollectionAdapter<TC> adapter = adapterRegistry.getCollectionAdapter(targetCollectionClass);
         if (adapter == null) {
             return null;
         }
         Collection<T> targetCollection = adapter.adapt((Class<T>) targetClass);
         if (sourceCollection.isEmpty()) {
-            return (TC) targetCollection;
+            return targetCollection;
         }
         Class<S> sourceClass = null;
         for (S source : sourceCollection) {
@@ -163,6 +194,28 @@ public class ConverterContext {
                 targetCollection.add((T) convert(source, (Type) sourceClass, (Type) targetClass));
             }
         }
-        return (TC) targetCollection;
+        return targetCollection;
+    }
+
+    public <SK, SV, TM extends Map, TK, TV> Map<TK, TV> convert(Map<SK, SV> sourceMap, Class<TM> targetMapClass, Class<TK> targetKeyClass, Class<TV> targetValueClass) {
+        if (targetMapClass == null || targetKeyClass == null || targetValueClass == null) {
+            throw new ConvertException("targetMapClass、targetKeyClass或targetValueClass的值请不要为空");
+        }
+        if (sourceMap == null) {
+            return null;
+        }
+        MapAdapter<TM> adapter = adapterRegistry.getMapAdapter(targetMapClass);
+        if (adapter == null) {
+            return null;
+        }
+        Map<TK, TV> targetMap = adapter.adapt(targetKeyClass, targetValueClass);
+        if (sourceMap.isEmpty()) {
+            return targetMap;
+        }
+        for (Map.Entry<SK, SV> entry : sourceMap.entrySet()) {
+            targetMap.put(entry.getKey() == null ? null : convert(entry.getKey(), targetKeyClass),
+                    entry.getValue() == null ? null : convert(entry.getValue(), targetValueClass));
+        }
+        return targetMap;
     }
 }

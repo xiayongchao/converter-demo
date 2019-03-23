@@ -1,10 +1,6 @@
 package org.jc.framework.converter.core;
 
-import org.jc.framework.converter.support.Converter;
-import org.jc.framework.converter.support.FieldMatcher;
-
 import java.util.Collection;
-import java.util.List;
 
 /**
  * 转换器工具类
@@ -22,7 +18,7 @@ public final class Converters {
         return new ConverterContext();
     }
 
-    public ConverterContext setDeepCopy(boolean deepCopy) {
+    public static ConverterContext setDeepCopy(boolean deepCopy) {
         return DEFAULT_CONVERTER_CONTEXT.setDeepCopy(deepCopy);
     }
 
@@ -38,11 +34,7 @@ public final class Converters {
         return DEFAULT_CONVERTER_CONTEXT.convert(source, targetClass);
     }
 
-    public static <S, T> List<T> convert(List<S> sourceList, Class<T> targetClass) {
-        return DEFAULT_CONVERTER_CONTEXT.convert(sourceList, targetClass);
-    }
-
-    public static <S, TC extends Collection, T> TC convert(Collection<S> sourceCollection, Class<TC> targetCollectionClass, Class<T> targetClass) {
+    public static <S, TC extends Collection, T> Collection<T> convert(Collection<S> sourceCollection, Class<TC> targetCollectionClass, Class<T> targetClass) {
         return DEFAULT_CONVERTER_CONTEXT.convert(sourceCollection, targetCollectionClass, targetClass);
     }
 }

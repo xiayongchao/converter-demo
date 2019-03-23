@@ -1,7 +1,6 @@
 package org.jc.framework.converter.core;
 
 import org.jc.framework.converter.support.DefaultFieldMatcher;
-import org.jc.framework.converter.support.FieldMatcher;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;

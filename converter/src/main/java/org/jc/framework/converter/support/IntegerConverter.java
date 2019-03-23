@@ -1,6 +1,7 @@
 package org.jc.framework.converter.support;
 
 import org.jc.framework.converter.core.AbstractConverter;
+import org.jc.framework.converter.core.Converter;
 
 /**
  * @author xiayc
