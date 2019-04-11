@@ -1,21 +1,37 @@
-import entity.User;
-import entity.UserInfo;
+package org.jc.framework.converter.test;
+
 import org.jc.framework.converter.core.Converter;
 import org.jc.framework.converter.core.Converters;
+import org.jc.framework.converter.entity.User;
+import org.jc.framework.converter.entity.UserInfo;
 
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- * @author xiayc
- * @date 2019/3/13
- */
-public class Main {
-    public static void main(String[] args) {
+public class Test {
+    @org.junit.Test
+    public void test1() {
+        User user = new User();
+//        user.setId(1);
+//        user.setName("下一次");
+        UserInfo userInfo = Converters.setDeepCopy(true).convert(user, UserInfo.class);
+
+
+        System.out.println(userInfo.getId());
+        System.out.println(userInfo.getName());
+        System.out.println("=====================");
+    }
+
+    @org.junit.Test
+    public void test3() {
+
+    }
+
+    @org.junit.Test
+    public void test4() {
         UserInfo user = new UserInfo();
         user.setId(null);
         user.setName("fdsafas");
-        User userInfo = Converters.convert(user, User.class);
+        User userInfo = Converters.setDeepCopy(true).convert(user, User.class);
         System.out.println("-----------------------------------------");
         if (userInfo != null) {
             System.out.println(userInfo.getId());
@@ -60,7 +76,7 @@ public class Main {
             }
         });
         userInfoList.add(user);
-        List<User> userList = (List<User>) Converters.setDeepCopy(true).convert(userInfoList, List.class, User.class);
+        List<User> userList = (List<User>) Converters.setDeepCopy(true).convert(userInfoList, ArrayList.class, User.class);
         for (User user1 : userList) {
             System.out.println(user1.getId());
             System.out.println(user1.getName());
@@ -80,12 +96,5 @@ public class Main {
                 }
             }
         }
-    }
-
-    public void a() {
-        ArrayList<Object> objects = new ArrayList<>();
-        objects.iterator();
-        new LinkedBlockingQueue().iterator();
-
     }
 }

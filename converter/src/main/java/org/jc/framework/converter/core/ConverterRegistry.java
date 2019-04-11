@@ -1,5 +1,6 @@
 package org.jc.framework.converter.core;
 
+import org.jc.framework.converter.definition.ClassWrapper;
 import org.jc.framework.converter.support.*;
 
 import java.lang.reflect.ParameterizedType;
@@ -131,6 +132,10 @@ public class ConverterRegistry {
         } else {
             return false;
         }
+    }
+
+    public <S, T> Converter<S, T> getConverter(ClassWrapper sourceClassWrapper, ClassWrapper targetClassWrapper) {
+        return getConverter((Type) sourceClassWrapper.getRawType(), (Type) targetClassWrapper.getRawType());
     }
 
     public <S, T> Converter<S, T> getConverter(Class<S> sourceClass, Class<T> targetClass) {

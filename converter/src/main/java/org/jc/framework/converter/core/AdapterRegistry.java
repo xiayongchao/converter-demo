@@ -1,7 +1,7 @@
 package org.jc.framework.converter.core;
 
-import org.jc.framework.converter.support.HashMapAdapter;
-import org.jc.framework.converter.support.ListAdapter;
+import org.jc.framework.converter.support.DefaultMapAdapter;
+import org.jc.framework.converter.support.DefaultCollectionAdapter;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.util.Collection;
@@ -14,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AdapterRegistry {
     private final Map<String, CollectionAdapter<?>> collectionAdapterMap = new ConcurrentHashMap<>();
-    private final Map<String, MapAdapter<?>> mapAdapterMap = new ConcurrentHashMap<>();
+    private final Map<String, org.jc.framework.converter.core.MapAdapter> mapAdapterMap = new ConcurrentHashMap<>();
 
     public AdapterRegistry() {
-        addAdapter(new ListAdapter());
-        addAdapter(new HashMapAdapter());
+        addAdapter(new DefaultCollectionAdapter());
+        addAdapter(new DefaultMapAdapter());
     }
 
     public AdapterRegistry addAdapter(CollectionAdapter<?> adapter) {
@@ -26,7 +26,7 @@ public class AdapterRegistry {
         return this;
     }
 
-    public AdapterRegistry addAdapter(MapAdapter<?> adapter) {
+    public AdapterRegistry addAdapter(org.jc.framework.converter.core.MapAdapter adapter) {
         mapAdapterMap.put(((ParameterizedTypeImpl) adapter.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName(), adapter);
         return this;
     }
@@ -38,10 +38,10 @@ public class AdapterRegistry {
         return (CollectionAdapter<T>) collectionAdapterMap.get(targetClass.getName());
     }
 
-    public <T extends Map> MapAdapter<T> getMapAdapter(Class<T> targetClass) {
+    public <T extends Map> org.jc.framework.converter.core.MapAdapter getMapAdapter(Class<T> targetClass) {
         if (targetClass == null) {
             return null;
         }
-        return (MapAdapter<T>) mapAdapterMap.get(targetClass.getName());
+        return (org.jc.framework.converter.core.MapAdapter) mapAdapterMap.get(targetClass.getName());
     }
 }

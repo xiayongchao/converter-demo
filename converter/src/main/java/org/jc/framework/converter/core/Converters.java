@@ -1,6 +1,7 @@
 package org.jc.framework.converter.core;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * 转换器工具类
@@ -36,5 +37,9 @@ public final class Converters {
 
     public static <S, TC extends Collection, T> Collection<T> convert(Collection<S> sourceCollection, Class<TC> targetCollectionClass, Class<T> targetClass) {
         return DEFAULT_CONVERTER_CONTEXT.convert(sourceCollection, targetCollectionClass, targetClass);
+    }
+
+    public <SK, SV, TM extends Map, TK, TV> Map<TK, TV> convert(Map<SK, SV> sourceMap, Class<TM> targetMapClass, Class<TK> targetKeyClass, Class<TV> targetValueClass) {
+        return DEFAULT_CONVERTER_CONTEXT.convert(sourceMap, targetMapClass, targetKeyClass, targetValueClass);
     }
 }

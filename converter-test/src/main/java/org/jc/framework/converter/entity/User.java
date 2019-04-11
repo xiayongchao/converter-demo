@@ -1,4 +1,6 @@
-package entity;
+package org.jc.framework.converter.entity;
+
+import org.jc.framework.converter.annotation.Properties;
 
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.Map;
  * @date 2019/3/14
  */
 public class User {
+    @Properties(defaultValue = "${100}")
     private long id;
     private String name;
     private List<Integer> askIdList;
